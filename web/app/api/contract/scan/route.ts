@@ -1,4 +1,4 @@
-import { getAuthUser } from '@/lib/auth'
+import { GUEST_USER_ID } from '@/lib/guest'
 import { supabaseAdmin } from '@/lib/supabase'
 import { analyzeClause } from '@/lib/analyze'
 import { computeHealthScore } from '@/lib/scoring'
@@ -13,11 +13,6 @@ function isAnalyzable(c: Clause): boolean {
 }
 
 export async function POST(request: Request) {
-  const user = await getAuthUser()
-  if (!user) {
-    return new Response(JSON.stringify({ error: '未登录' }), { status: 401 })
-  }
-
   let body: { contractId?: string }
   try {
     body = await request.json()
@@ -29,14 +24,14 @@ export async function POST(request: Request) {
     return new Response(JSON.stringify({ error: '缺少合同 ID' }), { status: 400 })
   }
 
-  // 读取合同（校验归属）
+  // 读取合同
   const { data: contract, error } = await supabaseAdmin
     .from('contracts')
-    .select('id, user_id, clauses, focus_areas')
+    .select('id, clauses, focus_areas')
     .eq('id', contractId)
     .maybeSingle()
 
-  if (error || !contract || contract.user_id !== user.userId) {
+  if (error || !contract) {
     return new Response(JSON.stringify({ error: '合同不存在' }), { status: 404 })
   }
 
@@ -49,7 +44,7 @@ export async function POST(request: Request) {
     .from('scan_reports')
     .insert({
       contract_id: contract.id,
-      user_id: user.userId,
+      user_id: GUEST_USER_ID,
       status: 'scanning',
     })
     .select('id')
@@ -132,7 +127,14 @@ export async function POST(request: Request) {
           })
           .eq('id', reportId)
 
-        send({ type: 'done', health_score: healthScore, report_id: reportId })
+        send({
+          type: 'done',
+          health_score: healthScore,
+          report_id: reportId,
+          high: counts.high,
+          mid: counts.mid,
+          low: counts.low,
+        })
       } catch (e) {
         console.error('[scan] error:', e)
         await supabaseAdmin

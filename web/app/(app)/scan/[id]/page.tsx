@@ -1,4 +1,3 @@
-import { getAuthUser } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import type { Clause } from '@/types'
@@ -10,15 +9,14 @@ export default async function ScanPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const user = await getAuthUser()
 
   const { data: contract } = await supabaseAdmin
     .from('contracts')
-    .select('id, user_id, file_name, clauses')
+    .select('id, file_name, clauses')
     .eq('id', id)
     .maybeSingle()
 
-  if (!contract || contract.user_id !== user?.userId) {
+  if (!contract) {
     notFound()
   }
 

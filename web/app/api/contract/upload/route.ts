@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
-import { getAuthUser } from '@/lib/auth'
+import { GUEST_USER_ID, ensureGuestUser } from '@/lib/guest'
 import { extractText, splitClauses, detectFileType } from '@/lib/contract-parser'
 
 export const runtime = 'nodejs'
@@ -10,11 +10,8 @@ const MAX_SIZE = 20 * 1024 * 1024 // 20MB
 const BUCKET = 'contracts'
 
 export async function POST(request: Request) {
-  // 1. 鉴权
-  const user = await getAuthUser()
-  if (!user) {
-    return NextResponse.json({ error: '未登录' }, { status: 401 })
-  }
+  // 1. 确保访客用户存在（无需登录）
+  await ensureGuestUser()
 
   // 2. 读取表单
   let form: FormData
@@ -67,7 +64,7 @@ export async function POST(request: Request) {
   const clauses = splitClauses(rawText)
 
   // 5. 上传原文件到 Storage
-  const storagePath = `${user.userId}/${Date.now()}-${crypto.randomUUID()}.${fileType}`
+  const storagePath = `${GUEST_USER_ID}/${Date.now()}-${crypto.randomUUID()}.${fileType}`
   const { error: uploadError } = await supabaseAdmin.storage
     .from(BUCKET)
     .upload(storagePath, buffer, {
@@ -84,7 +81,7 @@ export async function POST(request: Request) {
   const { data: contract, error: dbError } = await supabaseAdmin
     .from('contracts')
     .insert({
-      user_id: user.userId,
+      user_id: GUEST_USER_ID,
       file_name: file.name,
       file_url: storagePath,
       file_type: fileType,

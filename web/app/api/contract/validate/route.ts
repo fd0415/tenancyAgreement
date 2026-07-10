@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { getAuthUser } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { chatJSON, DEEPSEEK_MODELS } from '@/lib/deepseek'
 import { VALIDATE_SYSTEM_PROMPT, buildValidateUserPrompt } from '@/lib/prompts'
@@ -9,11 +8,6 @@ export const runtime = 'nodejs'
 export const maxDuration = 30
 
 export async function POST(request: Request) {
-  const user = await getAuthUser()
-  if (!user) {
-    return NextResponse.json({ error: '未登录' }, { status: 401 })
-  }
-
   let body: { contractId?: string }
   try {
     body = await request.json()
@@ -26,14 +20,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: '缺少合同 ID' }, { status: 400 })
   }
 
-  // 读取合同文本（校验归属）
+  // 读取合同文本
   const { data: contract, error } = await supabaseAdmin
     .from('contracts')
-    .select('id, user_id, raw_text')
+    .select('id, raw_text')
     .eq('id', contractId)
     .maybeSingle()
 
-  if (error || !contract || contract.user_id !== user.userId) {
+  if (error || !contract) {
     return NextResponse.json({ error: '合同不存在' }, { status: 404 })
   }
 

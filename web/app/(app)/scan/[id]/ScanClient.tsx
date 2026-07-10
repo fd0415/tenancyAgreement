@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { BrandMark } from '@/components/common/BrandMark'
+import { useSessionHistory } from '@/components/common/SessionHistory'
 import type { Clause, ScanEvent, RiskItem } from '@/types'
 
 type Severity = 'high' | 'mid' | 'low'
@@ -33,6 +34,7 @@ export default function ScanClient({
   clauses: Clause[]
 }) {
   const router = useRouter()
+  const { addItem } = useSessionHistory()
   const [statusMap, setStatusMap] = useState<Record<string, ClauseStatus>>({})
   const [trace, setTrace] = useState<TraceItem[]>([])
   const [doneCount, setDoneCount] = useState(0)
@@ -41,7 +43,13 @@ export default function ScanClient({
 
   // 后端并发分析的结果先落到 ref，前端再按顺序逐段揭示（两者解耦）
   const resultsRef = useRef<Record<string, ClauseResult>>({})
-  const doneRef = useRef<{ report_id: string } | null>(null)
+  const doneRef = useRef<{
+    report_id: string
+    health_score: number
+    high: number
+    mid: number
+    low: number
+  } | null>(null)
   const errorRef = useRef<string | null>(null)
 
   const clauseRefs = useRef<Record<string, HTMLSpanElement | null>>({})
@@ -91,7 +99,13 @@ export default function ScanClient({
             } else if (ev.type === 'risk') {
               resultsRef.current[ev.risk.clause_id] = { kind: 'risk', risk: ev.risk }
             } else if (ev.type === 'done') {
-              doneRef.current = { report_id: ev.report_id }
+              doneRef.current = {
+                report_id: ev.report_id,
+                health_score: ev.health_score,
+                high: ev.high,
+                mid: ev.mid,
+                low: ev.low,
+              }
             } else if (ev.type === 'error') {
               errorRef.current = ev.message
             }
@@ -171,13 +185,25 @@ export default function ScanClient({
       setPhase('done')
       setStatusText('审核完成 ✓')
       setTrace((t) => [...t, { kind: 'line', text: '已完成全部条款审核，正在生成体检报告…' }])
-      const reportId = doneRef.current.report_id
-      setTimeout(() => router.push(`/report/${reportId}`), 1200)
+      const result = doneRef.current
+      // 记入本会话历史（刷新浏览器即清空）
+      addItem({
+        reportId: result.report_id,
+        contractId,
+        fileName,
+        score: result.health_score,
+        high: result.high,
+        mid: result.mid,
+        low: result.low,
+        status: 'done',
+        createdAt: new Date().toISOString(),
+      })
+      setTimeout(() => router.push(`/report/${result.report_id}`), 1200)
     }
 
     consume()
     animate()
-  }, [contractId, router, clauses])
+  }, [contractId, router, clauses, fileName, addItem])
 
   function clauseClass(id: string): string {
     const s = statusMap[id]

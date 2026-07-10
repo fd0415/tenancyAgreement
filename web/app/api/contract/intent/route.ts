@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { getAuthUser } from '@/lib/auth'
 import { chatJSON, DEEPSEEK_MODELS } from '@/lib/deepseek'
 import { INTENT_SYSTEM_PROMPT, buildIntentUserPrompt } from '@/lib/prompts'
 import type { IntentResult } from '@/types'
@@ -7,11 +6,6 @@ import type { IntentResult } from '@/types'
 export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
-  const user = await getAuthUser()
-  if (!user) {
-    return NextResponse.json({ error: '未登录' }, { status: 401 })
-  }
-
   let body: { prompt?: string }
   try {
     body = await request.json()

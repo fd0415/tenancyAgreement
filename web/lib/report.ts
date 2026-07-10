@@ -13,12 +13,11 @@ export interface LoadedReport {
 }
 
 /**
- * 按报告 id 或合同 id 加载一份体检报告及其风险项，并做归属校验。
+ * 按报告 id 或合同 id 加载一份体检报告及其风险项。
  * 传入合同 id 时取该合同最新一份报告。
  */
 export async function loadReport(
-  idOrContractId: string,
-  userId: string
+  idOrContractId: string
 ): Promise<LoadedReport | null> {
   let report: ScanReport | null = null
 
@@ -40,7 +39,7 @@ export async function loadReport(
     report = (byContract.data as ScanReport | null) ?? null
   }
 
-  if (!report || report.user_id !== userId) return null
+  if (!report) return null
 
   const { data: contract } = await supabaseAdmin
     .from('contracts')

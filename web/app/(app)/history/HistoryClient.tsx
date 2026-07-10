@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import type { HistoryItem } from '@/lib/history'
+import { useSessionHistory } from '@/components/common/SessionHistory'
 
 function tierColor(score: number): string {
   if (score >= 80) return 'var(--low)'
@@ -22,7 +22,8 @@ function fmtDate(iso: string): string {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
 }
 
-export default function HistoryClient({ items }: { items: HistoryItem[] }) {
+export default function HistoryClient() {
+  const { items } = useSessionHistory()
   const [q, setQ] = useState('')
 
   const filtered = useMemo(() => {

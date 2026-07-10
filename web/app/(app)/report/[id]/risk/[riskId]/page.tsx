@@ -1,4 +1,3 @@
-import { getAuthUser } from '@/lib/auth'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { loadReport } from '@/lib/report'
@@ -18,10 +17,8 @@ export default async function RiskDetailPage({
   params: Promise<{ id: string; riskId: string }>
 }) {
   const { id, riskId } = await params
-  const user = await getAuthUser()
-  if (!user) notFound()
 
-  const loaded = await loadReport(id, user.userId)
+  const loaded = await loadReport(id)
   if (!loaded) notFound()
 
   const { report, risks, clauseMap } = loaded

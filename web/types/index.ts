@@ -81,5 +81,5 @@ export type ScanEvent =
   | { type: 'reading'; clause_id: string; clause_text: string; index: number; total: number }
   | { type: 'risk'; risk: Omit<RiskItem, 'id' | 'report_id' | 'created_at'>; done: number; total: number }
   | { type: 'safe'; clause_id: string; done: number; total: number }
-  | { type: 'done'; health_score: number; report_id: string }
+  | { type: 'done'; health_score: number; report_id: string; high: number; mid: number; low: number }
   | { type: 'error'; message: string }

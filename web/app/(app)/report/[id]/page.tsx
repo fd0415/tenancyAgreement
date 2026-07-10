@@ -1,4 +1,3 @@
-import { getAuthUser } from '@/lib/auth'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { BrandMark } from '@/components/common/BrandMark'
@@ -20,10 +19,8 @@ export default async function ReportPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const user = await getAuthUser()
-  if (!user) notFound()
 
-  const loaded = await loadReport(id, user.userId)
+  const loaded = await loadReport(id)
   if (!loaded) notFound()
 
   const { report, fileName, risks, clauseMap } = loaded

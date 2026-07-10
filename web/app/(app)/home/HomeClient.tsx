@@ -3,7 +3,8 @@
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import type { HistoryItem } from '@/lib/history'
+import { BrandMark } from '@/components/common/BrandMark'
+import { useSessionHistory } from '@/components/common/SessionHistory'
 
 const SUGGESTS = ['帮我看看押金和退租条款', '我要签的整租合同', '根据合同类型自动挑重点']
 
@@ -42,8 +43,9 @@ function tierBg(score: number): string {
   return 'var(--high-bg)'
 }
 
-export default function HomeClient({ myContracts = [] }: { myContracts?: HistoryItem[] }) {
+export default function HomeClient() {
   const router = useRouter()
+  const { items: myContracts } = useSessionHistory()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [tab, setTab] = useState<'types' | 'mine'>('types')
   const [prompt, setPrompt] = useState('')
@@ -144,7 +146,53 @@ export default function HomeClient({ myContracts = [] }: { myContracts?: History
       : `${(bytes / 1024 / 1024).toFixed(1)} MB`
 
   return (
-    <main className="relative flex-1 overflow-hidden px-[50px] pb-[50px] pt-16 text-center">
+    <div className="flex min-h-screen">
+      {/* 侧边栏 */}
+      <aside className="flex w-[216px] flex-shrink-0 flex-col gap-[22px] border-r border-line bg-surface px-3.5 py-5">
+        <div className="flex items-center gap-2.5 px-1.5 text-[15px] font-black text-ink">
+          <BrandMark size="sm" />
+          <span>租房合同助手</span>
+        </div>
+
+        <nav className="flex flex-col gap-0.5">
+          <span className="flex items-center gap-2.5 rounded-[10px] bg-page px-3 py-2.5 text-[13.5px] font-bold text-ink">
+            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+              <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            合同审核
+          </span>
+          <Link
+            href="/history"
+            className="flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-[13.5px] font-bold text-ink-soft hover:bg-page"
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+              <path d="M12 8v5l3 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="2" />
+            </svg>
+            历史记录
+          </Link>
+        </nav>
+
+        <div className="px-1.5 text-[11px] font-extrabold tracking-wider text-muted">本次审核</div>
+        <div className="flex flex-col gap-0.5">
+          {myContracts.length === 0 ? (
+            <span className="px-3 py-2 text-[12px] text-muted">暂无记录</span>
+          ) : (
+            myContracts.slice(0, 8).map((h) => (
+              <Link
+                key={h.reportId}
+                href={`/report/${h.reportId}`}
+                className="block truncate rounded-[10px] px-3 py-2 text-[12.5px] text-ink-soft hover:bg-page"
+              >
+                {h.fileName}
+              </Link>
+            ))
+          )}
+        </div>
+      </aside>
+
+      {/* 主区域 */}
+      <main className="relative flex-1 overflow-hidden px-[50px] pb-[50px] pt-16 text-center">
       {/* 背景光晕 */}
       <div
         className="pointer-events-none absolute -bottom-44 -left-20 h-[420px] w-[520px] opacity-[0.18]"
@@ -415,5 +463,6 @@ export default function HomeClient({ myContracts = [] }: { myContracts?: History
       </div>
 
     </main>
+    </div>
   )
 }
