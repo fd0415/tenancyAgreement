@@ -4,19 +4,20 @@
    设计稿 Design Tokens（来自 租约体检-AI合同审核-设计稿.html）
    ============================================================ */
 :root {
-  --page: #fafafa;
+  /* 方案 6 · 长春花蓝紫（Periwinkle）—— 冷调基底 + 蓝紫强调 + 极光光晕 */
+  --page: #f7f7fd;
   --surface: #ffffff;
-  --ink: #111113;
-  --ink-soft: #55555a;
-  --muted: #8a8a90;
-  --line: #e5e5e5;
-  --line-strong: #d8d8db;
-  --purple: #a78bfa;
-  --blue: #7dabf5;
+  --ink: #1a1830;
+  --ink-soft: #565273;
+  --muted: #8a87a3;
+  --line: #e7e5f2;
+  --line-strong: #d6d3e8;
+  --purple: #8b5cf6;
+  --blue: #6366f1;
   --orange: #f5b876;
   --pink: #f2a8c8;
-  --accent: var(--purple);
-  --accent-bg: rgba(167, 139, 250, 0.13);
+  --accent: #6366f1;
+  --accent-bg: rgba(99, 102, 241, 0.12);
   --black-btn: #111113;
   --high: #c0362f;
   --high-bg: rgba(192, 54, 47, 0.08);
@@ -59,7 +60,11 @@ html {
 }
 
 body {
-  background: var(--page);
+  background:
+    radial-gradient(1100px 520px at 8% -10%, rgba(99, 102, 241, 0.10), transparent 60%),
+    radial-gradient(1000px 500px at 96% 4%, rgba(139, 92, 246, 0.09), transparent 58%),
+    var(--page);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
     "Helvetica Neue", "Microsoft YaHei", sans-serif;
@@ -67,7 +72,7 @@ body {
 }
 
 ::selection {
-  background: rgba(167, 139, 250, 0.22);
+  background: rgba(99, 102, 241, 0.22);
 }
 
 /* ============================================================

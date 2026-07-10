@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { BrandMark } from '@/components/common/BrandMark'
+import { Avatar } from '@/components/common/Avatar'
 
 type NavKey = 'home' | 'history' | 'profile'
 
@@ -33,11 +34,12 @@ export function AppHeader({
         ))}
       </nav>
       <Link href="/profile" className="ml-auto" aria-label="个人中心" title={username}>
-        <div
-          className={`h-[34px] w-[34px] rounded-full ${
+        <Avatar
+          seed={username ?? '访客'}
+          size={34}
+          className={
             active === 'profile' ? 'ring-2 ring-accent ring-offset-2 ring-offset-surface' : ''
-          }`}
-          style={{ background: 'linear-gradient(145deg, var(--purple), var(--blue))' }}
+          }
         />
       </Link>
     </header>

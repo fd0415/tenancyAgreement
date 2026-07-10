@@ -191,7 +191,7 @@ export default function ScanClient({
   const total = clauses.length
 
   return (
-    <div className="flex h-screen flex-col bg-page">
+    <div className="flex h-screen flex-col">
       {/* 顶栏 */}
       <header className="flex items-center gap-3 border-b border-line bg-surface px-6 py-3">
         <BrandMark size="sm" />

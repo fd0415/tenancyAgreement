@@ -3,6 +3,7 @@ import { loadUserReports } from '@/lib/history'
 import { BrandMark } from '@/components/common/BrandMark'
 import HomeClient from './HomeClient'
 import LogoutButton from '@/components/common/LogoutButton'
+import { Avatar } from '@/components/common/Avatar'
 
 export default async function HomePage() {
   const user = await getAuthUser()
@@ -76,11 +77,7 @@ export default async function HomePage() {
 
       {/* 右上角头像 */}
       <div className="pointer-events-none absolute right-6 top-[22px] z-20">
-        <div
-          className="h-[34px] w-[34px] rounded-full"
-          style={{ background: 'linear-gradient(145deg, var(--purple), var(--blue))' }}
-          title={user?.username}
-        />
+        <Avatar seed={user?.username ?? '访客'} size={34} />
       </div>
     </div>
   )

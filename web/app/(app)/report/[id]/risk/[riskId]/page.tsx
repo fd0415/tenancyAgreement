@@ -36,7 +36,7 @@ export default async function RiskDetailPage({
   const copyText = risk.suggested_text || risk.suggestion || ''
 
   return (
-    <div className="min-h-screen bg-page">
+    <div className="min-h-screen">
       <div className="mx-auto flex max-w-3xl items-start gap-4 px-8 py-8">
         {/* 返回按钮 */}
         <Link

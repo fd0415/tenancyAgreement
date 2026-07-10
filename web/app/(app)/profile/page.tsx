@@ -4,6 +4,7 @@ import { getAuthUser } from '@/lib/auth'
 import { loadUserStats } from '@/lib/history'
 import { AppHeader } from '@/components/common/AppHeader'
 import LogoutButton from '@/components/common/LogoutButton'
+import { Avatar } from '@/components/common/Avatar'
 
 export default async function ProfilePage() {
   const user = await getAuthUser()
@@ -12,21 +13,13 @@ export default async function ProfilePage() {
   const stats = await loadUserStats(user.userId)
 
   return (
-    <div className="min-h-screen bg-page">
+    <div className="min-h-screen">
       <AppHeader active="profile" username={user.username} />
 
       <div className="mx-auto max-w-2xl px-8 py-10">
         {/* 头部：头像 + 账号 */}
         <div className="flex items-center gap-5">
-          <div
-            className="flex h-[76px] w-[76px] flex-shrink-0 items-center justify-center rounded-full"
-            style={{ background: 'linear-gradient(145deg, var(--purple), var(--blue))' }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8">
-              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="#fff" strokeWidth="2" />
-              <path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </div>
+          <Avatar seed={user.username} size={76} />
           <div>
             <h1 className="text-[22px] font-black text-ink">{user.username}</h1>
             <p className="mt-1 text-[13px] text-muted">账号密码登录 · 账号由平台统一开通</p>

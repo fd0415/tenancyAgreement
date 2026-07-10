@@ -32,7 +32,7 @@ export default async function ReportPage({
   const total = report.high_count + report.mid_count + report.low_count
 
   return (
-    <div className="min-h-screen bg-page">
+    <div className="min-h-screen">
       {/* 顶栏 */}
       <header className="flex items-center gap-3 border-b border-line bg-surface px-6 py-3">
         <BrandMark size="sm" />
