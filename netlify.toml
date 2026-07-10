@@ -1,0 +1,10 @@
+# Netlify 部署配置（Vercel 会忽略此文件）
+# Next.js 应用位于 web/ 子目录
+
+[build]
+  base = "web"
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
